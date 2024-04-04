@@ -1,3 +1,11 @@
+from flask import Flask, render_template, request, redirect, url_for
+from flask_sqlalchemy import SQLAlchemy
+from flask_migrate import Migrate
+from Helpers import check_birthdays, add_event, add_task, get_time_remaining, send_email, ticktock
+from Gsheets import rows_to_print
+import openpyxl
+from datetime import datetime as dt, timedelta
+from uuid import uuid4 
 from flask import Flask, render_template, request, redirect, url_for 
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate  
@@ -370,37 +378,22 @@ def update_deadline():
 
 
 if __name__ == '__main__':
-    with app.app_context(): 
-        # db.drop_all() 
+    with app.app_context():
         db.create_all()
-        db.session.commit() 
+        db.session.commit()
 
-        event_list = Event.query.all()  # Query all events from the database 
+        event_list = Event.query.all()
         task_list = Task.query.all()
-        deadline_list = Deadline.query.all()  
-        
-        subject = 'Daily Task Reminder'  # Define the subject here 
-        task_body = f'''
-                 
-                      You have tasks to complete today                       
-                       Your Events:  
-                     
-                        {" ".join(f"{event.event} summary: {event.summary}" for event in event_list)}
-                      
-                        Tasks:  
-                      
-                         {"".join(f"{task.task} summary: {task.summary}" for task in task_list)}
-                      
-                      
-                      Deadlines:  
-                      
-                         {"".join(f"{deadline.description}" for deadline in deadline_list)}
-                      
-                  
-                  '''
-        check_and_send_emails(today, subject, task_body)
+        deadline_list = Deadline.query.all()
 
-     
+        subject = 'Daily Task Reminder'
+        task_body = f'''
+            You have tasks to complete today                       
+            Your Events: {" ".join(f"{event.event} summary: {event.summary}" for event in event_list)}
+            Tasks: {" ".join(f"{task.task} summary: {task.summary}" for task in task_list)}
+            Deadlines: {" ".join(f"{deadline.description}" for deadline in deadline_list)}
+        '''
+        check_and_send_emails(today, subject, task_body)
 
 
 
