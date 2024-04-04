@@ -42,8 +42,8 @@ max_row=sheet.max_row
 '''
 
 #parsing quotes txt file 
-file1_path = r"C:\Users\Tanmay\Desktop\Personal\Network\glittery_quotes.txt" 
-file2_path = r"C:\Users\Tanmay\Desktop\Personal\Network\motivation_quotes.txt"
+file1_path = r"C:\\Users\\Tanmay\Desktop\\Personal\\Network\\glittery_quotes.txt" 
+file2_path = r"C:\\Users\\Tanmay\Desktop\\Personal\\Network\\motivation_quotes.txt"
  
 @ticktock
 def  check_and_send_emails(now, subject,task_body):
