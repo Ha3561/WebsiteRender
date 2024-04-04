@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Todo List</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <!-- Include Bootstrap and jQuery JS -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <!-- Link to external JavaScript file -->
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</head>
+<body> 
+    <header class="top_boundary">
+        <h1><strong>Welcome to my Planner</strong></h1>
+    </header>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6">
+                <!-- Display Time Remaining -->
+                <div class="container">
+                    <div class="time-info">
+                        <h5 id="time-remaining">Time Remaining till EOD: <span>{{ time_remaining }}</span></h5>
+                        <h5 id="today-date">Date: <span>{{ today_dat_string }}</span></h5>
+                    </div> 
+                    <div class="container quote" id="gQuote"><strong>Today's Glittery Quote: </strong>{{gQuote}}</div> 
+                    <div class="container quote" id="mQuote"><strong>Motivational Quote of The Day: </strong>{{mQuote}}</div> 
+                    <div class="row justify-content-center"> <!-- Center align the row content -->
+                        <!-- Your deadlines list code here -->
+                    </div>
+                </div>
+                <hr><!-- Dividing line -->
+
+                <!-- Important links -->
+                <ul>
+                    <li><a href="https://keep.google.com/u/0/" class="elegant-link">My Notes</a></li>
+                    <li><a href="https://brainscale.net/app/dual-n-back/training" class="elegant-link">Dual N back</a></li>
+                </ul>
+
+                <!-- Display Events@Today -->
+                <div class="events-header container"><h2>Events@Today</h2></div>
+                <hr>
+                <ul class="list-unstyled">
+                    {% for todo in events %}
+                    <li class="task-item">
+                        <!-- Form to update event status -->
+                        <div class="form-check">
+                            <form action="{{ url_for('update_todo') }}" method="post">
+                                <input type="hidden" name="todo_id" value="{{ todo.id }}">
+                                <input type="checkbox" name="done" value="1" {% if todo.done %}checked{% endif %}>
+                                <label>{{ todo.event }}</label>
+                                <button type="submit" class="btn btn-primary">Save Changes</button>
+                            </form>
+                        </div>
+                        <div class="Summary">Summary:{{ todo.summary }}</div>
+                        <div class="task-info">
+                            <div class="start-time">
+                                Start Time: <span>{{ todo.start_time }}</span>
+                            </div>
+                            <div class="end-time">
+                                End Time: <span>{{ todo.end_time }}</span>
+                            </div>
+                        </div>
+                        <div class="task-actions">
+                            <a href="{{ url_for('edit', id=todo.id) }}" class="btn btn-info btn-sm" role="button">Edit</a>
+                            <a href="{{ url_for('delete', id=todo.id) }}" class="btn btn-danger btn-sm" role="button">Delete</a>
+                        </div>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <br>
+    <hr>
+
+    <!-- Display Tasks for Today -->
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="tasks-header container"><h2>Tasks@Today</h2></div>
+                <ul class="list-unstyled">
+                    {% for task in tasks %}
+                    <li class="task-item">
+                        <!-- Form to update task status -->
+                        <div class="form-check">
+                            <form action="{{ url_for('update_task') }}" method="post">
+                                <input type="hidden" name="task_id" value="{{ task.id }}">
+                                <input type="checkbox" name="done" value="1" {% if task.done %}checked{% endif %}>
+                                <label>{{ task.task }}</label>
+                                <button type="submit" class="btn btn-primary">Save Changes</button>
+                            </form>
+                        </div>
+                        <div class="Summary">Summary:{{ task.summary }}</div>
+                        <div class="task-info">
+                            <div class="start-hour">
+                                Min Hours: <span>{{ task.start_hour }}</span>
+                            </div>
+                            <div class="end-hour">
+                                Max Hours: <span>{{ task.end_hour }}</span>
+                            </div>
+                        </div>
+                        <div class="task-actions">
+                            <a href="{{ url_for('edit_task', id=task.id) }}" class="btn btn-info btn-sm" role="button">Edit</a> <!--Get request as method not specified-->
+                            <a href="{{ url_for('delete_task', id=task.id) }}" class="btn btn-danger btn-sm" role="button">Delete</a> <!--GET request as method not specified-->
+                        </div>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div> 
+<br>
+<hr>
+<br>
+
+<!-- Display Deadlines for Today -->
+<div class="container">
+    <div class="row justify-content">
+        <div class="col-md-8">
+            <div class="deadlines-header container"><h2>Deadlines@future</h2></div>
+            <ul class="list-unstyled">
+                {% for deadline in deadlines %}
+                <li class="task-item {% if deadline.overdue %}overdue{% endif %}">
+                    <!-- Form to update deadline status -->
+                    <div class="form-check">
+                        <form action="{{ url_for('update_deadline') }}" method="post">
+                            <input type="hidden" name="todo_id" value="{{ deadline.id }}">
+                            <input type="checkbox" name="done" value="1" {% if deadline.done %}checked{% endif %}>
+                            <label>{{ deadline.deadline }}</label>
+                            <button type="submit" class="btn btn-primary">Save Changes</button>
+                        </form>
+                    </div>
+                    <div class="Summary">Summary:{{ deadline.description }}</div>
+                    <div class="task">
+                        <div class="deadline-date">
+                            Deadline Date: <span>{{ deadline.deadline }}</span>
+                        </div>
+                        {% if deadline.deadline < today_date_datetime %}
+    <!-- Deadline is overdue -->
+                            <div class="overdue">
+                                Due in: {{ (today_date_datetime - deadline.deadline).days }} days ago
+                            </div>
+                        {% else %}
+                            <!-- Deadline is not overdue -->
+                            <div class="not-overdue">
+                                Due in: {{ (deadline.deadline - today_date_datetime).days }} days
+                            </div>
+                        {% endif %}
+
+                        
+                        
+                        <div class="deadline-actions">
+                            <a href="{{ url_for('edit_deadline', id=deadline.id) }}" class="btn btn-info btn-sm" role="button">Edit</a>
+                            <a href="{{ url_for('delete_deadline', id=deadline.id) }}" class="btn btn-danger btn-sm" role="button">Delete</a>
+                        </div>
+                    </div>
+                </li>
+                {% endfor %}
+            </ul>
+        </div> 
+    </div> 
+</div>
+        
+<br><hr><br>
+
+    <!-- Display Birthdays using Excel -->
+    <div class="container">
+        {% for row in rows_to_print %}
+        <div class="row">
+            <div class="col">
+                <div class="birthday-item" style="text-align: center;">
+                    <hr>
+                    <ul class="list-inline-item">
+                        <p class="birthday-info">
+                            It is <mark>{{ row[0] }}'s ({{ row[1] }} {{ row[2] }}) </mark> Birthday Today!
+                        </p> 
+                        <p class="extra-info"><strong>Contact:</strong> {{ row[4] }}, <strong>Social Media:</strong> <a href="{{ row[11] }}" >{{ row[11] }}</a></p>
+                        
+                        <p class="extra-info">
+                            <strong>Info:</strong>
+                            [Group: {{ row[5] }}, Location: {{ row[8] }}, Company: {{ row[10] }}, Position: {{ row[9] }}]
+                        </p> 
+                        <p class="extra-info"><strong>Last Contact:</strong>{{ row[12]}} </p> 
+                        <p class="extra-info"> <strong>Comments:</strong>{{row[13]}}</p>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <br>
+    <hr>
+
+    <!-- Header for adding events -->
+    <h4 class="events-header">Add Events for today</h4> 
+
+    <!-- Add your form or input fields to add events here -->
+
+<!--Adding events"(Html form)-->
+<form action="{{ url_for('add') }}" method="post">
+    <div class="mb-3">
+        <label for="todo" class="form-label">Event</label>
+        <input type="text" class="form-control" id="todo" name="todo" placeholder="Enter Events">
+    </div>
+    <div class="mb-3">
+        <label for="summary" class="form-label">Summary</label>
+        <input type="text" class="form-control" id="summary" name="Summary" placeholder="Enter summary">
+    </div>
+    <div class="mb-3">
+        <label for="start_time" class="form-label">Start Time</label>
+        <input type="datetime-local" class="form-control" id="start_time" name="start_time">
+    </div>
+    <div class="mb-3">
+        <label for="end_time" class="form-label">End Time</label>
+        <input type="datetime-local" class="form-control" id="end_time" name="end_time">
+    </div>
+    <button type="submit" class="btn btn-primary">Add Task</button>
+</form> 
+
+<br>
+<hr>
+
+<h4 class="tasks-header">Add Tasks for Today</h4> 
+
+
+<br> 
+
+
+
+<!--Adding Tasks (html form)-->
+<form action="{{ url_for('add_task_route') }}" method="post">
+    <div class="mb-3">
+        <label for="task" class="form-label">Task</label>
+        <input type="text" class="form-control" id="task" name="task" placeholder="Enter Task">
+    </div>
+    <div class="mb-3">
+        <label for="task_summary" class="form-label">Summary</label>
+        <input type="text" class="form-control" id="task_summary" name="task_summary" placeholder="Enter Summary">
+    </div>
+    <div class="mb-3">
+        <label for="start_hour" class="form-label">Start Hour</label>
+        <input type="number" class="form-control" id="start_hour" name="min_hour" placeholder="Start Hour">
+    </div>
+    <div class="mb-3">
+        <label for="end_hour" class="form-label">End Hour</label>
+        <input type="number" class="form-control" id="end_hour" name="max_hour" placeholder="End Hour">
+    </div>
+    <button type="submit" class="btn btn-warning">Add Task</button> <!--Once the button tag is clicked the request is sent to the Url using TCP protocal..the url contains the function-->
+</form>
+
+<br>
+<hr>
+<br> 
+
+
+<!-- Add your form or input fields to add deadlines here -->
+
+<!-- Adding Deadlines -->
+<form action="{{ url_for('add_deadline') }}" method="post">
+    <div class="mb-3">
+        <label for="description" class="form-label">Description</label>
+        <input type="text" class="form-control" id="description" name="description" placeholder="Enter Deadline Description">
+    </div>
+    <div class="mb-3">
+        <label for="deadline" class="form-label">Deadline</label>
+        <input type="datetime-local" class="form-control" id="deadline" name="deadline" placeholder ='Add Date'>
+    </div>
+    <button type="submit" class="btn btn-danger">Add Deadline</button>
+</form> 
+
+<br>
+<hr>
+<br>
+
+<!--Counting the number of Tasks done -->
+<div class="container"> 
+    <p>You have completed only {{ event_ct }} events</p>
+    <p>You have completed only {{ task_ct }} tasks</p>
+</div>
+<hr>
+<br> 
+<!--Google Photos-->
+<div class="container">
+    <a href="https://photos.google.com/" class="elegant-link"><h4>Memories</h4></a> 
+    <strong><p class="quote">The Past: Remember,Learn but don't Live .</p> </strong>
+   
+    <br>  
+    <br>
+<footer class="bottom_boundary" ></footer>
+</body>
+</html>

@@ -1,0 +1,239 @@
+/* styles.css */
+
+body {
+    font-family: Arial, sans-serif;
+    margin: 20px;
+    padding: 0;
+    background-color: #f8f9fa; 
+    color: #343a40; 
+}
+
+h1 {
+    color: #333;
+} 
+
+/* CSS for the footer */
+.top_boundary {
+    text-align: center;
+    background-color: #c0c0c0; /* Use a metallic color, such as silver (#c0c0c0) */
+    color: #000; /* Text color */
+    padding: 20px;
+    border-top: 2px solid #333; /* Add a border for a metallic look at the top */
+    margin-top: 20px; /* Add some margin from the content above */
+} 
+
+.bottom_boundary {
+    text-align: center;
+    background-color: #c0c0c0; /* Use a metallic color, such as silver (#c0c0c0) */
+    color: #000; /* Text color */
+    padding: 20px;
+    border-bottom: 2px solid #333; /* Add a border for a metallic look */
+    
+    left: 0;
+    bottom: 0;
+    width: 100%;
+}
+
+
+
+
+form {
+    margin-bottom: 20px;
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+input[type="text"],
+input[type="datetime-local"],
+button {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 10px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+}
+
+button {
+    background-color: #4CAF50;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+}
+
+.text-decoration-line-through {
+    text-decoration: line-through;
+}
+.btn-spacer {
+    margin-top: 500px; /* Adjust the margin-top as needed for the desired spacing */
+    margin-bottom: 500px; /* Adjust the margin-bottom as needed for the desired spacing */ 
+    margin-left: 20px; 
+    margin-right: 20px;
+}
+ 
+
+
+button:hover {
+    background-color: #45a049;
+}
+
+hr {
+    margin: 20px 0;
+    border-color:#333;
+    border-top: 1px solid #ccc;
+}
+
+h2 {
+    color: #333;
+} 
+.container {
+    margin-top: 20px;} 
+.time-info {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+/* Styles for task items */
+.task-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px; /* Adjust margin as needed */
+    margin-top: 10px;
+    padding: 10px;
+    background-color: #fff;
+    border-radius: 5px;
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+}
+.task-item:hover {
+    background-color: #f1f1f1;}
+
+/* Styles for task information */
+.task-info {
+    margin-left: 20px; /* Adjust margin for horizontal spacing */
+    margin-top: 5px;
+}
+
+.events-header {
+    text-align: center; /* Center align the header */
+    margin-bottom: 20px; /* Add margin below the header */ 
+    font-style: italic; 
+    background-color: #007bff;
+    color: #fff;
+    padding: 10px;
+    border-radius: 5px
+} 
+
+.tasks-header {
+    text-align: center; /* Center align the header */
+    margin-bottom: 20px; /* Add margin below the header */ 
+    font-style: italic; 
+    background-color: rgb(255, 179, 0);
+    color: #fff;
+    padding: 10px;
+    border-radius: 5px
+} 
+.deadlines-header {
+    text-align: center; /* Center align the header */
+    margin-bottom: 20px; /* Add margin below the header */ 
+    font-style: italic; 
+    background-color: rgb(224, 46, 6);
+    color: #fff;
+    padding: 10px;
+    border-radius: 5px
+}
+
+.start-time,
+.end-time {
+    color: blue; /* Change text color as needed */
+    border: 1px solid blue; /* Add border around text */
+    padding: 5px; /* Add padding inside the border */
+    display: inline-block; /* Make the box inline to create horizontal spacing */
+}
+
+/* Styles for task actions */
+.task-actions {
+    display: flex;
+    gap: 5px; /* Adjust gap between buttons */
+} 
+
+/*Styles for Netowrk actopns */
+.birthday-info {
+    font-weight: bold;
+    color: blue;
+    margin-bottom: 10px;
+}
+
+.extra-info {
+    color: rgba(2, 154, 2, 0.877);
+    margin-top: 5px;
+}
+
+.elegant-link {
+    color: #333; /* Set the text color */
+    text-decoration: none; /* Remove underline */
+    transition: color 0.3s ease; /* Smooth color transition on hover */
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Set the font family */
+    font-size: 16px; /* Set the font size */
+}
+
+.elegant-link:hover {
+    color: #007bff; /* Change color on hover */
+} 
+
+/* Class for quotes */
+
+/* Quote Style */
+.quote {
+    font-style: italic;
+    color: #333; /* or any color you prefer */
+    margin: 10px 0;
+} 
+
+.birthday-item {
+    display: flex;
+    justify-content: center; /* Center horizontally */
+    align-items: center; /* Center vertically */
+    text-align: center; /* Center text inside the div */
+    height: 100%; /* Ensure the div takes up full height of parent */
+}
+
+
+/* styles.css */
+
+.overdue {
+    color: rgb(206, 0, 0); }  /* Change text color to red for overdue deadlines */ 
+.not-overdue {
+    background-color: green;
+}
+
+.time-left {
+    padding: 5px;
+    border-radius: 5px;
+    color: white;
+    font-weight: bold;
+    display: inline-block;
+} 
+
+.deadline-date {
+    font-weight: bold;
+    color: blue;
+}
+
+.summary {
+    font-size: 16px;
+    font-weight: bold;
+    color: black; /* Change color as desired */
+    /* Add more styling properties as needed */
+}
+ 
+
+

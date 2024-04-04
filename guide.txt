@@ -1,0 +1,67 @@
+'''' 
+**Note** 
+>>> from project import app,db #include the project without including '.py'
+>>> app.app_context().push()
+>>> db.create_all() 
+**Run these commands in the terminal to create a db file in the instance folder of your working directory** 
+OR 
+with app.app_context():
+    db.create_all()
+put this in VS code
+''' 
+
+#raw string is used in path to prevent escaping of characters 
+
+#uuid is used to generate unique id's 
+
+
+
+# Migrations 
+**Handle Manually**
+ app.app_context().push() 
+    with app.app_context():
+        db.drop_all() 
+    with app.app_context():
+        db.create_all()  
+This code deletes all code and then regenerates all the tables (with the changes) 
+
+**To handle automatically** 
+
+To handle Migrations using flask _migrate 
+*In the code editor* 
+from flask_migrate import Migrate  
+migrate=Migrate(app,db) 
+
+**then in the terminal** 
+>>export FLASK_APP=app.py (set your app)
+
+-Create an initial migration:
+bash: flask db init 
+This command will create a migrations folder in your project directory, which will store migration scripts.
+
+-Generate a migration script after making changes to your models:
+bash:flask db migrate -m "Description of the migration" 
+This command will analyze the changes you've made to your models and generate a migration script.
+
+-Apply the migration to the database:
+bash: flask db upgrade
+This command will apply the migration script to the database, making the necessary changes to the schema without dropping existing data. 
+
+flask db init  # Initialize the migrations directory (if not already done)
+flask db migrate -m "Add due_in column to Deadline table"  # Create the migration
+flask db upgrade  # Apply the migration to update the database schema
+
+#migrations are performed when there are changes to the structure of the table you've created
+
+Using Flask-Migrate in this way allows you to manage database schema changes more safely and efficiently, especially in production environments where preserving data integrity is crucial
+
+''' 
+General Info About HTTP requests 
+
+200's-success
+300's redirect 
+400's client errors (pg not found) 
+500's server errors (page crashing)
+
+
+'''

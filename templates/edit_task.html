@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Edit Todo</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <header>
+        <h1><strong>Welcome to my Planner</strong></h1>
+    </header>
+    <h1>Edit Todo</h1>
+    <form action="{{ url_for('edit_task', id=id) }}" method="post"> <!--This will send a post request to the url designated for edit_task function-->
+        <div class="mb-3">
+            <label for="task" class="form-label">Task</label>
+            <input type="text" class="form-control" id="task" name="task" value="{{ task.task }}">
+        </div>
+        <div class="mb-3">
+            <label for="task_summary" class="form-label">Summary</label>
+            <input type="text" class="form-control" id="task_summary" name="task_summary" value="{{ task.summary }}">
+        </div>
+        <div class="mb-3">
+            <label for="start_hour" class="form-label">Start Hour</label>
+            <input type="number" class="form-control" id="start_hour" name="min_hour" value="{{ task.start_hour }}">
+        </div>
+        <div class="mb-3">
+            <label for="end_hour" class="form-label">End Hour</label>
+            <input type="number" class="form-control" id="end_hour" name="max_hour" value="{{ task.end_hour }}">
+        </div> 
+        <br> <br>
+        <button type="submit" class="btn btn-success">Update Task</button>
+    </form>
+</body>
+</html>
