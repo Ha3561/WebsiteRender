@@ -42,12 +42,7 @@ migrate=Migrate(app,db)
 
 
 #openpyxl code 
-'''
-path=r"C:\Users\Tanmay\Desktop\Personal\Network\Network.xlsx"  #raw string to prevent escaping of characters
-wb=openpyxl.load_workbook(path)
-sheet=wb.active
-max_row=sheet.max_row  
-'''
+ 
 
 #parsing quotes txt file 
 file1_path = r"C:\\Users\\Tanmay\Desktop\\Personal\\Network\\glittery_quotes.txt" 
