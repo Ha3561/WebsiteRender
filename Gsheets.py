@@ -2,7 +2,9 @@ import gspread
 import os  
 from Helpers import check_birthdays 
 from datetime import datetime as dt  
-from Helpers import check_birthdays_sheets, ticktock
+from Helpers import check_birthdays_sheets, ticktock 
+from oauth2client.service_account import ServiceAccountCredentials 
+
 
 
 today = dt.now()
@@ -69,8 +71,11 @@ authorized_user = {
 ''' 
 
 credentials = {"web":{"client_id":"140651080242-jjref1rp4d2s49jp7sm47hrrujgnqnih.apps.googleusercontent.com","project_id":"gsheets-419306","auth_uri":"https://accounts.google.com/o/oauth2/auth","token_uri":"https://oauth2.googleapis.com/token","auth_provider_x509_cert_url":"https://www.googleapis.com/oauth2/v1/certs","client_secret":"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"}}
-print("connecting with your google sheet....")
-gc, authorized_user = gspread.oauth_from_dict(credentials)
+print("connecting with your google sheet....") 
+scope = ['https://spreadsheets.google.com/feeds', 'https://www.googleapis.com/auth/drive'] 
+creds = ServiceAccountCredentials.from_json_keyfile_dict(credentials, scope)
+gc = gspread.authorize(creds)
+#gc, authorized_user = gspread.oauth_from_dict(credentials)
  
 
  
