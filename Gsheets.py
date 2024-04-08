@@ -3,7 +3,11 @@ import os
 from Helpers import check_birthdays 
 from datetime import datetime as dt  
 from Helpers import check_birthdays_sheets, ticktock 
-from oauth2client.service_account import ServiceAccountCredentials
+from oauth2client.service_account import ServiceAccountCredentials 
+from google.auth import credentials
+from google.auth.transport.requests import Request
+from google.oauth2.credentials import Credentials
+from google_auth_oauthlib.flow import InstalledAppFlow
 
 
 
@@ -18,7 +22,7 @@ gc = gspread.oauth(
 ) 
  
  
-
+'''
 credentials = {
     "installed": {
         "client_id": "140651080242-c5a0dqq6hbiqc3mdakcs5qv72smlih43.apps.googleusercontent.com",
@@ -45,7 +49,7 @@ authorized_user = {
  
 '''
 
-'''
+
 credentials = {
     "installed": {
         "client_id": os.environ.get("GOOGLE_CLIENT_ID"),
@@ -57,7 +61,7 @@ credentials = {
         "redirect_uris": [os.environ.get("GOOGLE_REDIRECT_URIS")]
     }
 }
-
+ 
 authorized_user = {
     "refresh_token": os.environ.get("GOOGLE_REFRESH_TOKEN"),
     "token_uri": os.environ.get("GOOGLE_TOKEN_URI"),
@@ -68,8 +72,8 @@ authorized_user = {
     "account": os.environ.get("GOOGLE_ACCOUNT"),
     "expiry": os.environ.get("GOOGLE_EXPIRY")
 }
-''' 
 
+ 
 credentials = {
     "web": {
         "client_id": "140651080242-jjref1rp4d2s49jp7sm47hrrujgnqnih.apps.googleusercontent.com",
@@ -79,17 +83,13 @@ credentials = {
         "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
         "client_secret": "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"
     }
-}
+} 
+'''
 
 print("connecting with your google sheet....") 
-scope = ['https://spreadsheets.google.com/feeds', 'https://www.googleapis.com/auth/drive']
+ 
 
-# Create credentials object using ServiceAccountCredentials
-creds = ServiceAccountCredentials.from_json_keyfile_dict(credentials, scope)
-
-# Authorize with gspread using the credentials
-gc = gspread.authorize(creds)
-#gc, authorized_user = gspread.oauth_from_dict(credentials)
+gc, authorized_user = gspread.oauth_from_dict(credentials, authorized_user)
  
 
  
