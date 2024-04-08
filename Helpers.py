@@ -57,24 +57,25 @@ def check_birthdays(Wb,Sheet,Max_row):
 
 @ticktock
 def check_birthdays_sheets(birthday_values, today_day_month):
-    list_of_indices = [] 
+    list_of_indices = []
     print("Checking for Birthdays today.....")
     
-    for i, cell in enumerate(birthday_values):
+    for i, cell in enumerate(birthday_values, start=2):  # Assuming data starts from row 2
         if cell:
             cell_value = str(cell[0]).strip()
             
             try:
-                cell_value_dt = dt.strptime(cell_value, '%m/%d/%Y')
+                cell_value_dt = dt.strptime(cell_value, '%d/%m/%Y')  # Adjusted date format to match expected format
                 cell_day_month = cell_value_dt.strftime('%d-%m')
                 
                 if cell_day_month == today_day_month:
-                    list_of_indices.append(i + 2)
-                    print(f"Row numbers to append: {i + 2}")
+                    list_of_indices.append(i)
+                    print(f"Row numbers to append: {i}")
             except ValueError:
-                print(f"Error parsing date in row {i + 1}: {cell_value}")
-
+                print(f"Error parsing date in row {i}: {cell_value}")
+    print(list_of_indices)
     return list_of_indices
+
 #Function to calculate days left in deadline  
 
 

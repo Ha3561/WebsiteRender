@@ -1,3 +1,5 @@
+import os
+
 from flask import Flask, render_template, request, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
@@ -30,7 +32,10 @@ current_day = today.timetuple().tm_yday
 
 
 app = Flask(__name__, template_folder='templates')  
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get("DATABASE_URL")
+
+'sqlite:///site.db'
+#postgres://planner_m18s_user:ozFLdJsW2P4NxSoQv3EluDsm6ZY8yinu@dpg-co9u8vdjm4es73b5ta00-a.singapore-postgres.render.com/planner_m18s
 
 #creating a database object
 db = SQLAlchemy(app) 
