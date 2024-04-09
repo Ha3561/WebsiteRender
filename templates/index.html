@@ -140,17 +140,25 @@
                         <div class="deadline-date">
                             Deadline Date: <span>{{ deadline.deadline }}</span>
                         </div>
-                        {% if deadline.deadline < today_date_datetime %}
-    <!-- Deadline is overdue -->
-                            <div class="overdue">
-                                Due in: {{ (today_date_datetime - deadline.deadline).days }} days ago
-                            </div>
+                        {% if deadline.deadline is not none %}
+                            {% if deadline.deadline < today_date_datetime %}
+                                <!-- Deadline is overdue -->
+                                <div class="overdue">
+                                    Due in: {{ (today_date_datetime - deadline.deadline).days }} days ago
+                                </div>
+                            {% else %}
+                                <!-- Deadline is not overdue -->
+                                <div class="not-overdue">
+                                    Due in: {{ (deadline.deadline - today_date_datetime).days }} days
+                                </div>
+                            {% endif %}
                         {% else %}
-                            <!-- Deadline is not overdue -->
-                            <div class="not-overdue">
-                                Due in: {{ (deadline.deadline - today_date_datetime).days }} days
+                            <!-- Handle case where deadline is None -->
+                            <div class="no-deadline">
+                                No deadline set
                             </div>
                         {% endif %}
+                        
 
                         
                         
