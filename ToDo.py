@@ -374,7 +374,22 @@ def update_deadline():
         db.session.commit()
     return redirect(url_for('index'))
 
-#defining the same stuff for deadlines 
+#defining the same stuff for deadlines  
+
+
+@app.route('/Network', methods=['GET', 'POST'])
+def network():
+    if request.method == 'POST':
+        # Process the form data or perform actions based on the POST request
+        # For example, you can access form data using request.form['fieldname']
+        # Handle the form submission here
+        
+        # Redirect to a different URL after processing the form
+        return redirect(url_for('success_page'))
+    else:
+        # Handle GET request (displaying the form or other content)
+        return render_template('Network.html')
+
 
 
 if __name__ == '__main__':
