@@ -36,12 +36,9 @@ current_day = today.timetuple().tm_yday #integer
 
 
 app = Flask(__name__, template_folder='templates')  
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://planner_m18s_user:ozFLdJsW2P4NxSoQv3EluDsm6ZY8yinu@dpg-co9u8vdjm4es73b5ta00-a.singapore-postgres.render.com/planner_m18s'
-
-#os.environ.get("DATABASE_URL")
-
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get("DATABASE_URL")
+#'postgresql://planner_m18s_user:ozFLdJsW2P4NxSoQv3EluDsm6ZY8yinu@dpg-co9u8vdjm4es73b5ta00-a.singapore-postgres.render.com/planner_m18s'
 #'sqlite:///site.db'
-
 
 #creating a database object
 db = SQLAlchemy(app) 
@@ -493,7 +490,10 @@ def add_person():
     return redirect(url_for('display_network'))
 
 @app.route('/edit_person/<string:id_person>', methods=['GET', 'POST'])
-def edit_person(id_person,):
+
+
+@app.route('/edit_person/<string:id_person>', methods=['GET', 'POST'])
+def edit_person(id_person):
     person = Person.query.get_or_404(id_person)
  
     # Your edit_person route logic here
@@ -504,7 +504,19 @@ def edit_person(id_person,):
         person.Person = data['person_name']
         person.FirstName = data['first_name']
         person.LastName = data['last_name']
-        person.Bday = data['birthday']
+        
+        # Parse and format the birthday date
+        if data['birthday']:
+            try:
+                birthday = dt.strptime(data['birthday'], '%Y-%m-%d')
+                person.Bday = birthday.strftime('%Y-%m-%d')
+            except ValueError:
+                # Handle invalid date format
+                print('Invalid date format for birthday. Please use YYYY-MM-DD format.', 'danger')
+                return redirect(url_for('edit_person', id_person=id_person))
+        else:
+            person.Bday = None  # Set to None if no date provided
+        
         person.Contact = data['contact']
         person.Group = data['group']
         person.email = data['email']
@@ -514,9 +526,12 @@ def edit_person(id_person,):
         person.Insta_Facebook = data['insta_facebook']
         person.LastContact = data['LastContact']
         person.Last_Update = data['last_update']
+        
         db.session.commit() 
+        flash('Person details updated successfully.', 'success')
         return redirect(url_for('display_network')) 
     return render_template('edit_person.html', person=person)
+
 
 
 @app.route('/delete_person/<string:id>', methods=['POST']) 
