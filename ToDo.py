@@ -53,9 +53,9 @@ migrate=Migrate(app,db)
  
 
 #parsing quotes txt file 
-file1_path = r"Quotes\glittery_quotes.txt" 
-file2_path = r"Quotes\motivation_quotes.txt" 
-file3_path=r"Quotes\deepWork.txt"
+file1_path = "Quotes/glittery_quotes.txt" 
+file2_path = "Quotes/motivation_quotes.txt" 
+file3_path="Quotes/deepWork.txt"
  
 @ticktock
 def  check_and_send_emails(now, subject,task_body):
