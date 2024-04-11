@@ -25,11 +25,16 @@
                     <div class="time-info">
                         <h5 id="time-remaining">Time Remaining till EOD: <span>{{ time_remaining }}</span></h5>
                         <h5 id="today-date">Date: <span>{{ today_dat_string }}</span></h5>
+                        <h5 id="current_day_of_week">Day: <span>{{current_day_of_week}}</span></h5>
                     </div> 
                     <div class="container quote" id="gQuote"><strong>Today's Glittery Quote: </strong>{{gQuote}}</div> 
-                    <div class="container quote" id="mQuote"><strong>Motivational Quote of The Day: </strong>{{mQuote}}</div> 
-                    <div class="row justify-content-center"> <!-- Center align the row content -->
-                        <!-- Your deadlines list code here -->
+                    <div class="container quote" id="mQuote"><strong>Toda's Motivational Quote: </strong>{{mQuote}}</div>  
+                    <div class="container quote" id="dQuote"><strong>Today's Deep Work Tip:</strong> {{dQuote}}</div> 
+                    <div class="col-md-8">
+                    <div class="row justify-content-center"> <!-- Center align the row content --> 
+                        <img src="static\comfort_zone_pic.png" class="img-class"> 
+                    </div>
+                        <!--Your deadlines list code here -->
                     </div>
                 </div>
                 <hr><!-- Dividing line -->
@@ -38,8 +43,13 @@
                 <ul>
                     <li><a href="https://keep.google.com/u/0/" class="elegant-link">My Notes</a></li>
                     <li><a href="https://brainscale.net/app/dual-n-back/training" class="elegant-link">Dual N back</a></li>
+                </ul>  
+                <hr>
+                <h5 id="other pages">Other pages</h5>
+                <ul>
+                    <a href="{{url_for('display_network')}}" class="btn btn-outline-primary">People's Page</a>
                 </ul>
-
+                <br>
                 <!-- Display Events@Today -->
                 <div class="events-header container"><h2>Events@Today</h2></div>
                 <hr>
@@ -176,7 +186,7 @@
         
 <br><hr><br>
 
-    <!-- Display Birthdays using Excel -->
+    <!-- Display Birthdays using SQLalchemy -->
     <div class="container">
         {% for row in rows_to_print %}
         <div class="row">
@@ -185,16 +195,16 @@
                     <hr>
                     <ul class="list-inline-item">
                         <p class="birthday-info">
-                            It is <mark>{{ row[0] }}'s ({{ row[1] }} {{ row[2] }}) </mark> Birthday Today!
+                            It is <mark>{{ row.Person }}'s ({{ row.FirstName}} {{ row.LastName }}) </mark> Birthday Today!
                         </p> 
-                        <p class="extra-info"><strong>Contact:</strong> {{ row[4] }}, <strong>Social Media:</strong> <a href="{{ row[11] }}" >{{ row[11] }}</a></p>
+                        <p class="extra-info"><strong>Contact:</strong> {{ row.Contact }}, <strong>Social Media:</strong> <a href="{{ row.Insta_Facebook }}" >{{ row[11] }}</a></p>
                         
                         <p class="extra-info">
                             <strong>Info:</strong>
-                            [Group: {{ row[5] }}, Location: {{ row[8] }}, Company: {{ row[10] }}, Position: {{ row[9] }}]
+                            [Group: {{ row.Group }}, Location: {{ row.Location }}, Company: {{ row.Company }}, Position: {{ row.Position }}]
                         </p> 
-                        <p class="extra-info"><strong>Last Contact:</strong>{{ row[12]}} </p> 
-                        <p class="extra-info"> <strong>Comments:</strong>{{row[13]}}</p>
+                        <p class="extra-info"><strong>Last Contact:</strong>{{ row.LastContact}} </p> 
+                        <p class="extra-info"> <strong>Comments:</strong>{{row.Last_Update}}</p>
                     </ul>
                 </div>
             </div>
@@ -293,6 +303,21 @@
 </div>
 <hr>
 <br> 
+<!--Adding quotes,deep work tips--> 
+<div class="container">
+    <form action="/addQuote" class="form-group" method="POST"> 
+        <label for="gQuote" class="form-label">Add Glittery Quote</label>
+        <input type="text" class="form-control" id="gQuote" name="gQuote" placeholder="gQuote"> 
+        <label for="mQuote" class="form-label">Add Motivational Quote</label> 
+        <input type="text" class="form-control" id="mQuote" name="mQuote" placeholder="mQuote">
+        <label for="dQuote" class="form-label">Add Deep Work Tip</label>
+        <input type="text" class="form control" id="dQuote" name="dQuote" placeholder="dQuote"> 
+        
+        <button type="submit" class="btn btn-success">Add Quotes</button>
+
+
+    </form>
+</div>
 <!--Google Photos-->
 <div class="container">
     <a href="https://photos.google.com/" class="elegant-link"><h4>Memories</h4></a> 

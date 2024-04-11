@@ -12,7 +12,9 @@ h1 {
     color: #333;
 } 
 
-/* CSS for the footer */
+/* CSS for the footer */ 
+ 
+
 .top_boundary {
     text-align: center;
     background-color: #c0c0c0; /* Use a metallic color, such as silver (#c0c0c0) */
@@ -149,6 +151,34 @@ h2 {
     color: #fff;
     padding: 10px;
     border-radius: 5px
+} 
+.network-group-header { 
+    flex-grow:1;
+    text-align: center; /* Center align the header */
+    margin-bottom: 20px; 
+    margin-left:10px; /* Add margin below the header */ 
+    font-style: italic;  
+    font-size: 18px;
+    background-color: #153879;
+    color: #fff;
+    padding: 10px;
+    border-radius: 5px
+}  
+.person-group-header { 
+    .network-group-header {
+        text-align: center; /* Center align the header */
+        margin-bottom: 20px; 
+        margin-left:10px; /* Add margin below the header */ 
+        font-style: italic;  
+        font-size: 5px;
+        background-color: #05826f;
+        color: #3378df;
+        padding: 7px;
+        border-radius: 5px
+    }  
+
+
+
 }
 
 .start-time,
@@ -158,7 +188,12 @@ h2 {
     padding: 5px; /* Add padding inside the border */
     display: inline-block; /* Make the box inline to create horizontal spacing */
 }
+/*class for image */
+.img-class { 
+    max-width: 100%;
+    flex-grow: 0.75;
 
+}
 /* Styles for task actions */
 .task-actions {
     display: flex;
@@ -234,6 +269,42 @@ h2 {
     color: black; /* Change color as desired */
     /* Add more styling properties as needed */
 }
- 
 
+.person-card {
+    border: 1px solid #ccc;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+} 
 
+.add-group-section {
+    background-color: #f1f1f1; /* Light gray background for add group section */
+    padding: 15px; /* Add padding */
+    margin-bottom: 20px; /* Add some space below */
+}
+
+.add-group-form label {
+    display: block; /* Show labels as block elements */
+    margin-bottom: 5px; /* Add space below labels */
+
+} 
+/* centering a div using flexbox */
+.center-div {
+    display: flex;
+    font-size: 1.2em;
+    justify-content: center; /* Horizontally center */
+    align-items: center; /* Vertically center */
+    height: 5vh; /* Optional: Set height to viewport height for full-screen centering */
+}
+
+/*group list tag for Netowrk.html */
+.group-list {
+    list-style-type: none;
+    padding: 0;
+}
+
+.group-list li {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px; /* Adjust spacing between groups */
+}

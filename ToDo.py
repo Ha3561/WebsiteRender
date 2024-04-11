@@ -1,18 +1,20 @@
 import os
-
+from collections import defaultdict
 from flask import Flask, render_template, request, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from Helpers import check_birthdays, add_event, add_task, get_time_remaining, send_email, ticktock
-from Gsheets import rows_to_print
+#from Gsheets import rows_to_print
 import openpyxl
 from datetime import datetime as dt, timedelta
 from uuid import uuid4 
 from flask import Flask, render_template, request, redirect, url_for 
-from flask_sqlalchemy import SQLAlchemy
+from flask_sqlalchemy import SQLAlchemy 
+from sqlalchemy import func,extract #datetime functions imported from the sqlAlchemy library
 from flask_migrate import Migrate  
 from Helpers import check_birthdays,add_event,add_task,get_time_remaining,send_email, ticktock
-from Gsheets import rows_to_print
+
+
 
 import openpyxl 
 from datetime import datetime as dt,timedelta
@@ -26,16 +28,20 @@ from email.mime.text import MIMEText
 
 # Get today's date
 today = dt.now()
-today_day_month = today.strftime('%d-%m') 
+today_day_month = today.strftime('%d-%m')  #string object 
+today_day_month_dt = dt.strptime(today_day_month,'%d-%m') #datetime object
 today_day_month_year = today.strftime('%d/%m/%Y') 
-current_day = today.timetuple().tm_yday 
+current_day = today.timetuple().tm_yday #integer 
+
 
 
 app = Flask(__name__, template_folder='templates')  
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get("DATABASE_URL")
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://planner_m18s_user:ozFLdJsW2P4NxSoQv3EluDsm6ZY8yinu@dpg-co9u8vdjm4es73b5ta00-a.singapore-postgres.render.com/planner_m18s'
+
+#os.environ.get("DATABASE_URL")
 
 #'sqlite:///site.db'
-#postgresql://planner_m18s_user:ozFLdJsW2P4NxSoQv3EluDsm6ZY8yinu@dpg-co9u8vdjm4es73b5ta00-a.singapore-postgres.render.com/planner_m18s
+
 
 #creating a database object
 db = SQLAlchemy(app) 
@@ -50,8 +56,9 @@ migrate=Migrate(app,db)
  
 
 #parsing quotes txt file 
-file1_path = r"glittery_quotes.txt" 
-file2_path = r"motivation_quotes.txt"
+file1_path = r"Quotes\glittery_quotes.txt" 
+file2_path = r"Quotes\motivation_quotes.txt" 
+file3_path=r"Quotes\deepWork.txt"
  
 @ticktock
 def  check_and_send_emails(now, subject,task_body):
@@ -75,18 +82,30 @@ def  check_and_send_emails(now, subject,task_body):
 
 
 
-def quotes(curr_day, path1, path2):
-    with open(path1, 'r') as file1, open(path2, 'r') as file2:
+def quotes(curr_day, path1, path2, path3):
+    with open(path1, 'r') as file1, open(path2, 'r') as file2,open(path3,'r') as file3:
         gQuotes = file1.readlines()
-        mQuotes = file2.readlines() 
+        mQuotes = file2.readlines()  
+        deepWork = file3.readlines()
         index_g = (curr_day % len(gQuotes))
-        index_m = (curr_day % len(mQuotes)) 
-        return gQuotes[index_g].strip(), mQuotes[index_m].strip()
+        index_m = (curr_day % len(mQuotes))  
+        index_d = (curr_day % len(deepWork))
+        return gQuotes[index_g].strip(), mQuotes[index_m].strip(), deepWork[index_d].strip() 
+def fileWriter(path1, path2, path3, gQuote, mQuote, dQuote): 
+    with open(path1, 'a') as file1, open(path2, 'a') as file2, open(path3, 'a') as file3:  
+        if gQuote:  # Check if gQuote is not empty
+            file1.write(f"-{gQuote}\n")
+        if mQuote:  # Check if mQuote is not empty
+            file2.write(f"-{mQuote}\n")
+        if dQuote:  # Check if dQuote is not empty
+            file3.write(f"-{dQuote}\n")
+
+        
 
          
 
         # Read and process the contents of file2
-        f 
+        
 
 #defining database classes Events,Task and Deadline
 class Event(db.Model):
@@ -122,7 +141,29 @@ class Deadline(db.Model):
     
 
     def __repr__(self):
-        return f'Deadline({self.description})'
+        return f'Deadline({self.description})' 
+#==================================================================================================================================================
+class Person(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    Person = db.Column(db.String(100), nullable=False)
+    FirstName = db.Column(db.String(100), nullable=False)
+    LastName = db.Column(db.String(100), nullable=False)
+    Bday = db.Column(db.String(100))
+    Contact = db.Column(db.String(100))
+    Group = db.Column(db.String(100), nullable=False)
+    email = db.Column(db.String(100), unique=True,)
+    Location = db.Column(db.String(100))
+    Position = db.Column(db.String(100))
+    Company = db.Column(db.String(100))
+    Insta_Facebook = db.Column(db.String(100))
+    LastContact = db.Column(db.String(100))
+    Last_Update = db.Column(db.String(100))
+
+class Group(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), nullable=False, unique=True)
+ 
+ 
 
 
 
@@ -145,25 +186,37 @@ event_ct_set=set()
 
 #**Route Functions** 
 #_________________________________________________________________________________________________________________________________________________
-
+#INDEX FUNCTION 
+@app.route('/index')
+@app.route('/home')
 @app.route('/')
-def index():  
+
+def index():   
+
     global ct  
-    global today  
-    global rows_to_print
-    current_day = today.timetuple().tm_yday
+    global today    
+   
+
+    current_day_of_week = str(today.strftime('%A'))  
+   
+    print(current_day_of_week)
+    #global rows_to_print
+    current_day = today.timetuple().tm_yday 
+    
     # time remaining
     time_remaining = get_time_remaining() 
     # checking for birthdays 
    
     #getting quotes 
-    gQuote, mQuote = quotes(current_day, file1_path, file2_path)
+    gQuote, mQuote,dQuote= quotes(current_day, file1_path, file2_path, file3_path)
 
     # eventList,#Task List & Deadline List
     event_list = Event.query.all()  # Query all events from the database 
     task_list = Task.query.all()
     deadline_list = Deadline.query.all() 
-
+    rows_to_print = Person.query.filter(extract('day', Person.Bday) == today_day_month_dt.day, 
+                                    extract('month', Person.Bday) == today_day_month_dt.month).all()
+    print(rows_to_print)
     
 
     # counting the number of events,tasks done yet
@@ -176,10 +229,21 @@ def index():
     #calculatiing the due_in ,overdue a
     
    
-    return render_template('index.html', events=event_list, task_ct=len(task_ct_set), event_ct=len(event_ct_set), rows_to_print=rows_to_print, time_remaining=time_remaining, tasks=task_list,deadlines=deadline_list,today_date_string = today_day_month_year,today_date_datetime=today,gQuote=gQuote, mQuote=mQuote)
+    return render_template('index.html', events=event_list, task_ct=len(task_ct_set), event_ct=len(event_ct_set), rows_to_print=rows_to_print, time_remaining=time_remaining, tasks=task_list,deadlines=deadline_list,today_date_string = today_day_month_year,today_date_datetime=today,gQuote=gQuote, mQuote=mQuote,dQuote=dQuote,current_day_of_week = current_day_of_week)
 
 
-#--------------------------------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------------------------------- 
+#function to add quotes
+@app.route('/addQuote',methods=['POST'])
+def addQuote(): 
+    # Access form data using request.form
+    w_gQuote = request.form.get('gQuote')  # Use .get() to handle empty input # the input is stored in the form of key-value pairs
+    w_mQuote = request.form.get('mQuote')  # Use .get() to handle empty input
+    w_dQuote = request.form.get('dQuote')  # Use .get() to handle empty input
+    
+    global file1_path, file2_path, file3_path 
+    fileWriter(file1_path, file2_path, file3_path, w_gQuote, w_mQuote, w_dQuote) 
+    return redirect(url_for('index')) 
 
 #add function adds an event
 @app.route('/add', methods=['POST'])
@@ -377,23 +441,132 @@ def update_deadline():
 #defining the same stuff for deadlines  
 
 
-@app.route('/Network', methods=['GET', 'POST'])
-def network():
+#=======================================================================================================================================================================
+#for my network 
+@app.route('/network') 
+@app.route('/Network') 
+def display_network(): 
+    unfiltered_persons = Person.query.all()   
+    groups = Group.query.all()  
+    print(groups)
+
+    persons_by_groups =  defaultdict(list) # Initialize empty lists for each group
+    for group in groups:
+        group_name = group.name.strip().rstrip('>').lstrip('<')  # Remove leading '<' and trailing '>'
+        persons_by_groups[group_name] = Person.query.filter_by(Group=group.name).all()
+ 
+        #persons_by_groups[person.Group].append(person)
+    
+    #print(unfiltered_persons, groups, persons_by_groups)
+    return render_template('Network.html', unfiltered_persons=unfiltered_persons, groups=groups, persons_by_groups=persons_by_groups)
+
+
+@app.route('/add_person', methods=['POST'])
+def add_person():
+    data = request.form
+    # Check if the email already exists
+    existing_person = Person.query.filter_by(email=data['email']).first()
+    if existing_person:
+        print('Email already exists!', 'error')
+        return redirect(url_for('display_network'))
+    
+    # Handle empty 'Bday' field
+    bday = data['birthday'] if data['birthday'] else None
+    new_person = Person(
+        Person=data['person_name'],
+        FirstName=data['first_name'],
+        LastName=data['last_name'],
+        Bday=bday,
+        Contact=data['contact'],
+        Group=data['group'],
+        email=data['email'],
+        Location=data['location'],
+        Position=data['position'],
+        Company=data['company'],
+        Insta_Facebook=data['insta_facebook'],
+        LastContact=data['LastContact'],
+        Last_Update=data['last_update']
+    )
+    db.session.add(new_person)
+    db.session.commit() 
+    print('Person added successfully!', 'success')
+    return redirect(url_for('display_network'))
+
+@app.route('/edit_person/<string:id_person>', methods=['GET', 'POST'])
+def edit_person(id_person,):
+    person = Person.query.get_or_404(id_person)
+ 
+    # Your edit_person route logic here
+
+    
     if request.method == 'POST':
-        # Process the form data or perform actions based on the POST request
-        # For example, you can access form data using request.form['fieldname']
-        # Handle the form submission here
-        
-        # Redirect to a different URL after processing the form
-        return redirect(url_for('success_page'))
-    else:
-        # Handle GET request (displaying the form or other content)
-        return render_template('Network.html')
+        data = request.form
+        person.Person = data['person_name']
+        person.FirstName = data['first_name']
+        person.LastName = data['last_name']
+        person.Bday = data['birthday']
+        person.Contact = data['contact']
+        person.Group = data['group']
+        person.email = data['email']
+        person.Location = data['location']
+        person.Position = data['position']
+        person.Company = data['company']
+        person.Insta_Facebook = data['insta_facebook']
+        person.LastContact = data['LastContact']
+        person.Last_Update = data['last_update']
+        db.session.commit() 
+        return redirect(url_for('display_network')) 
+    return render_template('edit_person.html', person=person)
+
+
+@app.route('/delete_person/<string:id>', methods=['POST']) 
+def delete_person(id):
+    person = Person.query.get_or_404(id) 
+    db.session.delete(person)
+    db.session.commit() 
+    return redirect(url_for('display_network')) 
+
+@app.route('/add_group', methods=['POST']) 
+def add_group():
+    group_name = request.form['group_name']  # Extract group_name from form data
+    new_group = Group(name=group_name)  
+    db.session.add(new_group)  
+    db.session.commit() 
+    print("Successfully added group")
+    return redirect(url_for('display_network')) 
+
+@app.route('/edit_group/<string:id>', methods=['GET', 'POST'])
+def edit_group(id):
+    group = Group.query.get_or_404(id)
+    
+    if request.method == 'POST':
+        # Check if 'group_name' is in the form data
+        if 'group_name' in request.form:
+            group.name = request.form['group_name']
+            db.session.commit()
+            return redirect(url_for('display_network'))
+        else:
+            print('Request not valid')
+            return redirect(url_for('edit_group', id=id))
+    
+    return render_template('edit_group.html', group=group)
+
+
+@app.route('/delete_group/<string:id>', methods=['POST'])  
+def delete_group(id):
+    group = Group.query.get_or_404(id)
+    db.session.delete(group)
+    db.session.commit()
+    return redirect(url_for('display_network'))
+
+
+    
 
 
 
 if __name__ == '__main__':
-    with app.app_context():
+    with app.app_context(): 
+        
         db.create_all()
         db.session.commit()
 
