@@ -518,7 +518,7 @@ def edit_person(id_person):
             person.Bday = None  # Set to None if no date provided
         
         person.Contact = data['contact']
-        person.Group = data['group']
+        
         person.email = data['email']
         person.Location = data['location']
         person.Position = data['position']
@@ -528,7 +528,7 @@ def edit_person(id_person):
         person.Last_Update = data['last_update']
         
         db.session.commit() 
-        flash('Person details updated successfully.', 'success')
+         
         return redirect(url_for('display_network')) 
     return render_template('edit_person.html', person=person)
 
