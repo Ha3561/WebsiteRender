@@ -80,7 +80,11 @@
                         </div>
                     </li>
                     {% endfor %}
-                </ul>
+                </ul> 
+                <mark>
+                <h6>You have <span style="color:blueviolet">"{{events_due}}  events due </span></h6>  
+                </mark>
+                
             </div>
         </div>
     </div>
@@ -120,7 +124,11 @@
                         </div>
                     </li>
                     {% endfor %}
-                </ul>
+                </ul>  
+                <mark> 
+                <h6>You have <span style="color:yellowgreen">{{tasks_due}} tasks due </span></h6> 
+                <h6>Task Index: <span style="color: yellowgreen">{{task_index}} </span></h4> 
+                </mark>
             </div>
         </div>
     </div> 
@@ -188,28 +196,33 @@
 
     <!-- Display Birthdays using SQLalchemy -->
     <div class="container">
-        {% for row in rows_to_print %}
-        <div class="row">
-            <div class="col">
-                <div class="birthday-item" style="text-align: center;">
-                    <hr>
-                    <ul class="list-inline-item">
-                        <p class="birthday-info">
-                            It is <mark>{{ row.Person }}'s ({{ row.FirstName}} {{ row.LastName }}) </mark> Birthday Today!
-                        </p> 
-                        <p class="extra-info"><strong>Contact:</strong> {{ row.Contact }}, <strong>Social Media:</strong> <a href="{{ row.Insta_Facebook }}" >{{ row[11] }}</a></p>
-                        
-                        <p class="extra-info">
-                            <strong>Info:</strong>
-                            [Group: {{ row.Group }}, Location: {{ row.Location }}, Company: {{ row.Company }}, Position: {{ row.Position }}]
-                        </p> 
-                        <p class="extra-info"><strong>Last Contact:</strong>{{ row.LastContact}} </p> 
-                        <p class="extra-info"> <strong>Comments:</strong>{{row.Last_Update}}</p>
-                    </ul>
-                </div>
+        {% if rows_to_print %}
+            {% for row in rows_to_print %}
+            <div class="row">
+                <div class="col">
+                    <div class="birthday-item" style="text-align: center;">
+                        <hr>
+                        <ul class="list-inline-item">
+                            <p class="birthday-info">
+                                It is <mark>{{ row.Person }}'s ({{ row.FirstName}} {{ row.LastName }}) </mark> Birthday Today!
+                            </p> 
+                            <p class="extra-info"><strong>Contact:</strong> {{ row.Contact }}, <strong>Social Media:</strong> <a href="{{ row.Insta_Facebook }}" >{{ row[11] }}</a></p>
+                            
+                            <p class="extra-info">
+                                <strong>Info:</strong>
+                                [Group: {{ row.Group }}, Location: {{ row.Location }}, Company: {{ row.Company }}, Position: {{ row.Position }}]
+                            </p> 
+                            <p class="extra-info"><strong>Last Contact:</strong>{{ row.LastContact}} </p> 
+                            <p class="extra-info"> <strong>Comments:</strong>{{row.Last_Update}}</p>
+                        </ul>
+                    </div>
+                </div> 
+        
             </div>
-        </div>
-        {% endfor %}
+            {% endfor %} 
+        {% else %}
+            <p class="birthday-info"> <mark>No Birthdays to Celebrate Today!</mark></p> 
+        {% endif %}
     </div>
 
     <br>
@@ -238,7 +251,7 @@
         <label for="end_time" class="form-label">End Time</label>
         <input type="datetime-local" class="form-control" id="end_time" name="end_time">
     </div>
-    <button type="submit" class="btn btn-primary">Add Task</button>
+    <button type="submit" class="btn btn-primary">Add Event</button>
 </form> 
 
 <br>

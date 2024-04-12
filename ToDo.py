@@ -10,7 +10,8 @@ from datetime import datetime as dt, timedelta
 from uuid import uuid4 
 from flask import Flask, render_template, request, redirect, url_for 
 from flask_sqlalchemy import SQLAlchemy 
-from sqlalchemy import func,extract #datetime functions imported from the sqlAlchemy library
+from sqlalchemy import extract, cast #datetime functions imported from the sqlAlchemy library 
+from sqlalchemy.types import Date
 from flask_migrate import Migrate  
 from Helpers import check_birthdays,add_event,add_task,get_time_remaining,send_email, ticktock
 
@@ -145,10 +146,10 @@ class Person(db.Model):
     Person = db.Column(db.String(100), nullable=False)
     FirstName = db.Column(db.String(100), nullable=False)
     LastName = db.Column(db.String(100), nullable=False)
-    Bday = db.Column(db.String(100))
+    Bday = db.Column(db.Date)  # Use db.Date for date data
     Contact = db.Column(db.String(100))
     Group = db.Column(db.String(100), nullable=False)
-    email = db.Column(db.String(100), unique=True,)
+    email = db.Column(db.String(100))
     Location = db.Column(db.String(100))
     Position = db.Column(db.String(100))
     Company = db.Column(db.String(100))
@@ -156,31 +157,17 @@ class Person(db.Model):
     LastContact = db.Column(db.String(100))
     Last_Update = db.Column(db.String(100))
 
+    def __repr__(self):
+        return f'<Person {self.id}: {self.Person}>' 
+
 class Group(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(100), nullable=False, unique=True)
+    name = db.Column(db.String(100), nullable=False, unique=True) 
+
+    
+    def __repr__(self):
+        return f'<Group {self.id}: {self.name}>'
  
- 
-
-
-
-
- #**Data Storage
-# list(list of dictionaries)
-#wehre data is stored
-events= []
-deadlines=[]
-tasks=[]
-periodic_tasks=[]
-task_ct_set=set()
-event_ct_set=set()
-
- 
-
-
-
-
-
 #**Route Functions** 
 #_________________________________________________________________________________________________________________________________________________
 #INDEX FUNCTION 
@@ -210,23 +197,42 @@ def index():
     # eventList,#Task List & Deadline List
     event_list = Event.query.all()  # Query all events from the database 
     task_list = Task.query.all()
-    deadline_list = Deadline.query.all() 
-    rows_to_print = Person.query.filter(extract('day', Person.Bday) == today_day_month_dt.day, 
-                                    extract('month', Person.Bday) == today_day_month_dt.month).all()
+    deadline_list = Deadline.query.all()  
+    unfiltered_persons = Person.query.all()
+   
+   # Assuming you have fetched all Person objects from the database into all_persons
+
+# Filter persons based on birthdays today
+    rows_to_print = [
+    person for person in unfiltered_persons
+    if person.Bday == True and  person.Bday.day == today_day_month_dt.day and person.Bday.month == today_day_month_dt.month
+]
+
     print(rows_to_print)
     
 
-    # counting the number of events,tasks done yet
-    for todo in event_list:  # Iterate over the queried events
+    # counting the number of events,tasks done yet and also calculatiing the task index 
+    min_task_time,max_task_time = 0,0
+    task_ct_set,event_ct_set = set(),set()
+    for todo in event_list:  # Iterate over the queried events 
+          #counting the number of events for event_index
         if todo.done: 
             event_ct_set.add(todo.id)  # Assuming 'done' is a boolean attribute of Event 
-    for task in task_list:
+    for task in task_list:  
+        min_task_time += task.start_hour
+        max_task_time+=task.end_hour
+
         if task.done:
             task_ct_set.add(task.id) 
-    #calculatiing the due_in ,overdue a
+    #calculatiing the due_in ,overdue a 
+    tasks_due = len(task_list)-len(task_ct_set) 
+    task_index = round((tasks_due * 23) / (30 * (min_task_time + max_task_time)), 3) if tasks_due != 0 and max_task_time != 0 else 0
+
+    events_due = len(event_list)-len(event_ct_set) 
+     
     
    
-    return render_template('index.html', events=event_list, task_ct=len(task_ct_set), event_ct=len(event_ct_set), rows_to_print=rows_to_print, time_remaining=time_remaining, tasks=task_list,deadlines=deadline_list,today_date_string = today_day_month_year,today_date_datetime=today,gQuote=gQuote, mQuote=mQuote,dQuote=dQuote,current_day_of_week = current_day_of_week)
+    return render_template('index.html', events=event_list, task_index=task_index, tasks_due = tasks_due, task_ct=len(task_ct_set),  event_ct=len(event_ct_set), events_due = events_due, rows_to_print=rows_to_print, time_remaining=time_remaining, tasks=task_list,deadlines=deadline_list,today_date_string = today_day_month_year,today_date_datetime=today,gQuote=gQuote, mQuote=mQuote,dQuote=dQuote,current_day_of_week = current_day_of_week)
 
 
 #-------------------------------------------------------------------------------------------------------- 
@@ -246,7 +252,7 @@ def addQuote():
 @app.route('/add', methods=['POST'])
 def add():
     todo = request.form['todo']
-    summary = request.form['Summary']  # Capture the Summary field
+    summary = request.form['Summary'] if request.form["Summary"] else None  # Capture the Summary field
     start_date_str = request.form['start_time']  # datetime object
     end_date_str = request.form['end_time']  # datetime object 
 
@@ -268,7 +274,7 @@ def add_task_route():
     task = Task(
         id=task_id,
         task=request.form["task"],
-        summary=request.form['task_summary'],
+        summary=request.form['task_summary'] if request.form["task_summary"] else None,
         start_hour=request.form['min_hour'],
         end_hour=request.form['max_hour']
     )
@@ -282,7 +288,7 @@ def add_deadline():
     global today 
     
     deadline_id = str(uuid4())
-    description = request.form['description']
+    description = request.form['description'] if request.form['description'] else None
     deadline_date_str = request.form['deadline']  # string object has to be converted to datetime object
     deadline_date = dt.strptime(deadline_date_str, '%Y-%m-%dT%H:%M') if deadline_date_str else None   
     
@@ -370,7 +376,8 @@ def check_deadline(id):
 #----------------------------------------------------------------------------------------------------
 # Deleting an event
 @app.route('/delete/<string:id>')
-def delete(id):
+def delete(id): 
+    global event_ct_set
     event = Event.query.get_or_404(id) 
     event_ct_set.discard(event.id)
     db.session.delete(event)
@@ -379,7 +386,8 @@ def delete(id):
 
 # Deleting a task
 @app.route('/delete_task/<string:id>')
-def delete_task(id):
+def delete_task(id): 
+    global task_ct_set
     task = Task.query.get_or_404(id) 
     task_ct_set.discard(task.id)
     db.session.delete(task)
@@ -509,23 +517,23 @@ def edit_person(id_person):
         if data['birthday']:
             try:
                 birthday = dt.strptime(data['birthday'], '%Y-%m-%d')
-                person.Bday = birthday.strftime('%Y-%m-%d')
+                person.Bday = birthday.date()  # Assuming person.Bday is a Date type
             except ValueError:
                 # Handle invalid date format
                 print('Invalid date format for birthday. Please use YYYY-MM-DD format.', 'danger')
                 return redirect(url_for('edit_person', id_person=id_person))
         else:
-            person.Bday = None  # Set to None if no date provided
+            person.Bday = None  
         
         person.Contact = data['contact']
         
-        person.email = data['email']
-        person.Location = data['location']
-        person.Position = data['position']
-        person.Company = data['company']
-        person.Insta_Facebook = data['insta_facebook']
-        person.LastContact = data['LastContact']
-        person.Last_Update = data['last_update']
+        person.email = data['email'] if data['email'] else "None"
+        person.Location = data['location'] if data["location"] else "None"
+        person.Position = data['position'] if data["position"] else "None"
+        person.Company = data['company'] if data["company"] else "None"
+        person.Insta_Facebook = data['insta_facebook'] if data["insta_facebook"] else "None"
+        person.LastContact = data['LastContact'] if data["LastContact"] else None
+        person.Last_Update = data['last_update'] if data["last_update"] else "None"
         
         db.session.commit() 
          
@@ -580,7 +588,8 @@ def delete_group(id):
 
 
 if __name__ == '__main__':
-    with app.app_context(): 
+    with app.app_context():  
+
         
         db.create_all()
         db.session.commit()
@@ -596,7 +605,7 @@ if __name__ == '__main__':
             Tasks: {" ".join(f"{task.task} summary: {task.summary}" for task in task_list)}
             Deadlines: {" ".join(f"{deadline.description}" for deadline in deadline_list)}
         '''
-        check_and_send_emails(today, subject, task_body)
+        #check_and_send_emails(today, subject, task_body)
 
 
 
