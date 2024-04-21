@@ -47,8 +47,7 @@ db = SQLAlchemy(app)
 #creating a migrate object ---To  
 migrate=Migrate(app,db) 
 
-
-
+task_ct_set,event_ct_set = set(),set()
 
 #openpyxl code 
  
@@ -205,7 +204,7 @@ def index():
 # Filter persons based on birthdays today
     rows_to_print = [
     person for person in unfiltered_persons
-    if person.Bday == True and  person.Bday.day == today_day_month_dt.day and person.Bday.month == today_day_month_dt.month
+    if person.Bday == True and person.Bday.day == today_day_month_dt.day and person.Bday.month == today_day_month_dt.month
 ]
 
     print(rows_to_print)
@@ -213,7 +212,7 @@ def index():
 
     # counting the number of events,tasks done yet and also calculatiing the task index 
     min_task_time,max_task_time = 0,0
-    task_ct_set,event_ct_set = set(),set()
+    
     for todo in event_list:  # Iterate over the queried events 
           #counting the number of events for event_index
         if todo.done: 
@@ -317,8 +316,8 @@ def edit(id):
     if request.method == 'POST':
         event.event = request.form['todo']
         event.summary = request.form['Summary']
-        event.start_time = request.form['start_time']
-        event.end_time = request.form['end_time']
+        event.start_time = request.form['start_hour']
+        event.end_time = request.form['end_hour']
         db.session.commit()
         return redirect(url_for('index'))
     return render_template('edit.html', event=event, id=id)

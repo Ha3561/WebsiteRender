@@ -12,20 +12,20 @@
     <h1>Edit Todo</h1>
     <form action="{{ url_for('edit', id=id) }}" method="post">
         <div class="mb-3">
-            <label for="task" class="form-label">Task</label>
-            <input type="text" class="form-control" id="task" name="task" value="{{ event.event }}">
+            <label for="todo" class="form-label">Task</label>
+            <input type="text" class="form-control" id="todo" name="todo" value="{{ event.event }}">
         </div>
         <div class="mb-3">
-            <label for="task_summary" class="form-label">Summary</label>
-            <input type="text" class="form-control" id="task_summary" name="task_summary" value="{{ event.summary }}">
+            <label for="Summary" class="form-label">Summary</label>
+            <input type="text" class="form-control" id="Summary" name="Summary" value="{{ event.summary }}">
         </div>
         <div class="mb-3">
             <label for="start_hour" class="form-label">Start Hour</label>
-            <input type="datetime-local" class="form-control" id="start_hour" name="min_hour" value="{{ event.start_time }}">
+            <input type="datetime-local" class="form-control" id="start_hour" name="start_hour" value="{{ event.start_time }}">
         </div>
         <div class="mb-3">
             <label for="end_hour" class="form-label">End Hour</label>
-            <input type="datetime-local" class="form-control" id="end_hour" name="max_hour" value="{{ event.end_time }}">
+            <input type="datetime-local" class="form-control" id="end_hour" name="end_hour" value="{{ event.end_time }}">
         </div> 
         <br> <br>
         <button type="submit" class="btn btn-success">Update Event</button>

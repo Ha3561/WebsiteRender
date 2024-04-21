@@ -162,7 +162,7 @@
                             {% if deadline.deadline < today_date_datetime %}
                                 <!-- Deadline is overdue -->
                                 <div class="overdue">
-                                    Due in: {{ (today_date_datetime - deadline.deadline).days }} days ago
+                                    Missed Deadline by: {{ (today_date_datetime - deadline.deadline).days }} days 
                                 </div>
                             {% else %}
                                 <!-- Deadline is not overdue -->
